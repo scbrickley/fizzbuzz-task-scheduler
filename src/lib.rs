@@ -5,6 +5,8 @@ use derive_more::Display;
 use rocket::form::{FromForm, FromFormField};
 use rocket::serde::{Deserialize, Serialize};
 
+use std::time::Duration;
+
 pub type TaskID = i32;
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -14,6 +16,30 @@ pub struct Task {
 	pub status: TaskState,
 	pub id: TaskID,
 	pub time: DateTime<Utc>,
+}
+
+impl Task {
+	pub async fn exec(&self) {
+		let nap_time = match self.typ {
+			TaskType::Fizz => 3,
+			TaskType::Buzz => 5,
+			TaskType::FizzBuzz => 0,
+		};
+
+		match self.typ {
+			TaskType::Fizz | TaskType::Buzz => {
+				println!(
+					"Executing {} task - sleeping for {} seconds",
+					self.typ, nap_time
+				);
+				tokio::time::sleep(Duration::from_secs(nap_time)).await;
+				println!("{}: {}", self.typ, self.id)
+			}
+			TaskType::FizzBuzz => {
+				println!("{}: {}", self.typ, self.time)
+			}
+		}
+	}
 }
 
 #[derive(
