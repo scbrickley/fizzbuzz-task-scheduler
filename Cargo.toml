@@ -9,3 +9,5 @@ edition = "2021"
 rocket = { version = "=0.5.0-rc.3", features = ["json"] }
 chrono = { version = "0.4.24", features = ["serde"]} 
 derive_more = { version = "0.99.17", default-features = false, features = ["display"] }
+tokio = { version = "1.26", features = ["fs", "sync"] }
+home = "0.5.4"

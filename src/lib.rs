@@ -1,17 +1,24 @@
+pub mod db;
+
 use chrono::{DateTime, Utc};
 use derive_more::Display;
 use rocket::form::{FromForm, FromFormField};
 use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize)]
+pub type TaskID = i32;
+
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Task {
 	pub typ: TaskType,
-	pub state: TaskState,
-	pub id: i32,
+	pub status: TaskState,
+	pub id: TaskID,
+	pub time: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize, Display, Serialize, FromFormField)]
+#[derive(
+	Clone, Debug, Deserialize, Display, Serialize, FromFormField, PartialEq,
+)]
 #[serde(crate = "rocket::serde")]
 pub enum TaskType {
 	#[display(fmt = "Fizz")]
@@ -22,7 +29,9 @@ pub enum TaskType {
 	FizzBuzz,
 }
 
-#[derive(Debug, Deserialize, Display, Serialize, FromFormField)]
+#[derive(
+	Clone, Debug, Deserialize, Display, Serialize, FromFormField, PartialEq,
+)]
 #[serde(crate = "rocket::serde")]
 pub enum TaskState {
 	#[display(fmt = "Scheduled")]
