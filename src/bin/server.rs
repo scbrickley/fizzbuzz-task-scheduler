@@ -16,7 +16,7 @@ fn launch_server() -> _ {
 #[post("/tasks", format = "application/json", data = "<task>")]
 async fn create_task(task: Json<CreateTaskRequest>) -> String {
     match db::create_task(task.into_inner()).await {
-        Ok(id) => format!("{}", id),
+        Ok(resp) => resp,
         Err(e) => format!("{}", e),
     }
 }

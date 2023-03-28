@@ -4,7 +4,9 @@ use std::path::PathBuf;
 use tokio::fs::{File, OpenOptions};
 use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt, SeekFrom};
 
-use crate::{CreateTaskRequest, Filters, Task, TaskID, TaskState};
+use crate::{
+    CreateTaskRequest, CreateTaskResponse, Filters, Task, TaskID, TaskState,
+};
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -60,7 +62,7 @@ async fn write_state(state: &State) -> std::io::Result<()> {
     Ok(())
 }
 
-pub async fn create_task(req: CreateTaskRequest) -> std::io::Result<TaskID> {
+pub async fn create_task(req: CreateTaskRequest) -> std::io::Result<String> {
     let mut state = read_state().await?;
     state.last_id += 1;
     state.tasks.push(Task {
@@ -70,7 +72,8 @@ pub async fn create_task(req: CreateTaskRequest) -> std::io::Result<TaskID> {
         status: TaskState::Scheduled,
     });
     write_state(&state).await?;
-    Ok(state.last_id)
+    let resp = CreateTaskResponse { id: state.last_id };
+    Ok(json::to_string(&resp).unwrap())
 }
 
 pub async fn list_tasks(filters: Filters) -> std::io::Result<String> {

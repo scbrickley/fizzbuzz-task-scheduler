@@ -74,6 +74,12 @@ pub struct CreateTaskRequest {
     pub time: DateTime<Utc>,
 }
 
+#[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct CreateTaskResponse {
+    pub id: TaskID,
+}
+
 #[derive(Debug, Deserialize, Serialize, FromForm)]
 #[serde(crate = "rocket::serde")]
 pub struct Filters {
