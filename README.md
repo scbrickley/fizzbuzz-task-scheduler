@@ -116,11 +116,11 @@ This will run a worker process that will periodically check for any scheduled ta
 - `Buzz` tasks will cause the worker to sleep for 5 seconds, starting at the scheduled execution time, before printing out the word `Buzz`, followed by the task ID number.
 - `FizzBuzz` tasks will run immediately once the scheduled execution time is reached or passed, before printing out the word `FizzBuzz`, followed by the current time.
 
-Worker processes can run in parallel with one another, each pulling tasksk off the queue and running them at the specified execution time.
+Worker processes can run in parallel with one another, each pulling tasks off the queue and running them at the specified execution time.
 
 Each worker follows these steps:
 
-1. Check the timestamp for the task scheduled to run next. If there are no tasks currently on the queue, defer (i.e., sleep for 1 second, and go back to step 1)
+1. Check the timestamp for the task scheduled to run next. If there are no tasks currently on the queue, defer (i.e., sleep for 1 second, and go back to the beginning of step 1)
 2. If it's not yet time to run the task, defer. Otheriwse, tell the server to return the task info and mark the task as claimed. 
 3. Run the task according to the task type.
 4. Once the task is done running, tell the server to mark the task as complete.
