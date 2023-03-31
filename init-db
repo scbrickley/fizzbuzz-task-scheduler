@@ -1,0 +1,9 @@
+#!/bin/bash
+
+psql --host=localhost -U postgres \
+	-c 'CREATE TABLE tasks (
+		id SERIAL PRIMARY KEY,
+		tasktype VARCHAR NOT NULL,
+		status VARCHAR NOT NULL,
+		time TIMESTAMPTZ NOT NULL
+	);'

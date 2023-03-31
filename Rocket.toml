@@ -1,0 +1,2 @@
+[default.databases.fizzbuzz-task-db]
+url = "postgres://postgres@localhost/"
