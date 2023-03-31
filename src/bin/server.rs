@@ -148,7 +148,7 @@ async fn complete_task(
     }
 }
 
-// This function is more repetitive than I would have liked, particular when it comes to
+// This function is more repetitive than I would have liked, particularly when it comes to
 // the closure passed into each `map` call. It would be nice to turn that into a function
 // that I can call whenever I need to convert a record into a task. Unfortunately, the type
 // of `record` is opaque here.
