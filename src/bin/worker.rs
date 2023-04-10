@@ -14,7 +14,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         client: Client::new(),
     };
     loop {
-        let next_time = match w.check_next_task_time().await {
+        let next_task = match w.check_next_task_time().await {
             Ok(t) => t,
             Err(_) => {
                 println!("Could not check time for next task - it's possible the task queue is empty");
@@ -22,13 +22,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 continue;
             }
         };
-        if next_time > OffsetDateTime::now_utc() {
-            println!("Next task time is {} - deferring", next_time);
+        if next_task.time > OffsetDateTime::now_utc() {
+            println!("Next task time is {} - deferring", next_task.time);
             sleep(Duration::from_secs(1)).await;
             continue;
         }
 
-        let task = match w.claim_next_task().await {
+        let task = match w.pull_task(next_task.id).await {
             Ok(t) => t,
             Err(_) => {
                 println!("Could not pull new task - it's possible the task queue is empty");
@@ -50,7 +50,7 @@ struct Worker {
 impl Worker {
     async fn check_next_task_time(
         &self,
-    ) -> Result<OffsetDateTime, Box<dyn Error>> {
+    ) -> Result<NextTaskTimeResponse, Box<dyn Error>> {
         let req = self
             .client
             .get("http://localhost:8000/tasks/next")
@@ -63,15 +63,16 @@ impl Worker {
             .json::<NextTaskTimeResponse>()
             .await?;
 
-        Ok(resp.time)
+        Ok(resp)
     }
 
-    async fn claim_next_task(
+    async fn pull_task(
         &self,
+        id: TaskID,
     ) -> Result<Task, Box<dyn StdError + 'static>> {
         let req = self
             .client
-            .post("http://localhost:8000/tasks/next")
+            .post(format!("http://localhost:8000/tasks/pull/{}", id))
             .build()?;
 
         Ok(self.client.execute(req).await?.json::<Task>().await?)

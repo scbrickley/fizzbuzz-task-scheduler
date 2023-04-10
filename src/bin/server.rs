@@ -27,7 +27,7 @@ async fn launch() -> _ {
             get_task,
             delete_task,
             get_next_task_time,
-            claim_next_task,
+            pull_task_by_id,
             complete_task,
         ],
     )
@@ -93,25 +93,28 @@ async fn get_next_task_time(
 	.await?;
 
     match r {
-        Some(task) => Ok(Some(Json(NextTaskTimeResponse { time: task.time }))),
+        Some(task) => Ok(Some(Json(NextTaskTimeResponse {
+            time: task.time,
+            id: task.id,
+        }))),
         None => Ok(None),
     }
 }
 
-#[post("/next")]
-async fn claim_next_task(
+#[post("/pull/<id>")]
+async fn pull_task_by_id(
     mut db: Connection<TaskDB>,
+    id: TaskID,
 ) -> Result<Option<Json<Task>>> {
     let r = sqlx::query!(
         r#"
 UPDATE tasks
 SET status = 'Claimed'
-WHERE id IN (SELECT id FROM tasks
-	WHERE status = 'Waiting' 
-	ORDER BY time, id
-	LIMIT 1)
+WHERE status = 'Waiting' 
+AND id = $1
 RETURNING id, tasktype, time, status
 		"#,
+        id
     )
     .fetch_optional(&mut *db)
     .await?;

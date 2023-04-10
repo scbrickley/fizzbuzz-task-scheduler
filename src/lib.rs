@@ -125,6 +125,7 @@ pub struct CreateTaskResponse {
 pub struct NextTaskTimeResponse {
     #[serde(with = "rocket::time::serde::rfc3339")]
     pub time: OffsetDateTime,
+    pub id: TaskID,
 }
 
 #[derive(Debug, Deserialize, Serialize, FromForm)]

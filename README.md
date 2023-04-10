@@ -36,7 +36,7 @@ psql --host=localhost -U postgres \
 You can also run the `init-db` bash script in the repo root.
 
 _Note: the `sqlx` library that the scheduler uses to talk to postgres ostensibly has tools that handle table creation for you on start up. I could not get these to work as advertised, so I resorted to doing it the old fashioned way and storing the commands in the bash scripts mentioned above._
-
+ 
 Once the postgres instance is running and has the appropriate tables, we can move on to compiling and running the server.
 
 ### Running the server
@@ -53,7 +53,7 @@ The server exposes an API that allows users to:
 It also exposes a few other endpoints that are only intended to be used by workers. These allow workers to:
 
 - Check the timestamp of the next task to be executed
-- Pull a task off the queue
+- Pull a task off the queue by its ID
 - Mark a task as completed
 
 ### Creating new tasks
